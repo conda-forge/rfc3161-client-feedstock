@@ -10,16 +10,17 @@ package:
 source:
   url: https://pypi.org/packages/source/r/rfc3161-client/rfc3161_client-${{ version }}.tar.gz
   sha256: 4bda5a2bc6947c16b6f8df90ff0e99cb333d78ab1465517f637d313d75703651
-  patches:
-    - remove_openssl_vendored.patch
 
 build:
-  number: 2
+  number: 3
   script:
-    - if: win
-      then: SET "OPENSSL_DIR=%LIBRARY_PREFIX%" && ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-      else: OPENSSL_DIR=$PREFIX ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    env:
+      OPENSSL_NO_VENDOR: "1"
+    content:
+      - if: win
+        then: SET "OPENSSL_DIR=%LIBRARY_PREFIX%" && ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+        else: OPENSSL_DIR=$PREFIX ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+      - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 requirements:
   build:
